@@ -6,6 +6,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,12 +27,11 @@ public class JwtUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     private final SecretKey key;
-    String secretString = "aB1cD2eF3gH4iJ5kL6mN7pQ8rS9tU0vW!X@Y#Z$1234567890";
-
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 7*24*60*60*1000;
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 7*24*60*60*1000;
 
-    public JwtUtils(SecretKey key) {
+    public JwtUtils( @Value("${secret_string}")
+                      String secretString) {
         byte[] keyBytes = secretString.getBytes(StandardCharsets.UTF_8);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }

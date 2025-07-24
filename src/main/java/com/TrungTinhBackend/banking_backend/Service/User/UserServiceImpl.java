@@ -89,8 +89,10 @@ public class UserServiceImpl implements UserService{
         user1.setCreatedAt(LocalDateTime.now());
         user1.setUpdatedAt(LocalDateTime.now());
 
+        userRepository.save(user1);
+
         apiResponse.setStatusCode(200);
-        apiResponse.setMessage("Login success");
+        apiResponse.setMessage("Register success");
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }
