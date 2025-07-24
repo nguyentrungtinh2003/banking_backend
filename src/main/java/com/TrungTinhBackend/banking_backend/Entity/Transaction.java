@@ -3,12 +3,14 @@ package com.TrungTinhBackend.banking_backend.Entity;
 import com.TrungTinhBackend.banking_backend.Enum.TransactionStatus;
 import com.TrungTinhBackend.banking_backend.Enum.TransactionType;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Transaction {
 
     @Id

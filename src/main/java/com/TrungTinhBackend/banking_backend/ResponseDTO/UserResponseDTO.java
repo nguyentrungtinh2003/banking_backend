@@ -2,9 +2,7 @@ package com.TrungTinhBackend.banking_backend.ResponseDTO;
 
 import com.TrungTinhBackend.banking_backend.Enum.Gender;
 import com.TrungTinhBackend.banking_backend.Enum.Role;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -41,7 +41,10 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**","/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/oauth2/**",             // 👈 Cho phép truy cập OAuth2 endpoint
+                                "/login/oauth2/**", "/robots.txt", "/api/ws/**",  "/api/user-google" ).permitAll()
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/employee/**").hasAnyAuthority("EMPLOYEE","ADMIN")
                         .requestMatchers("/api/customer/**").hasAnyAuthority("CUSTOMER","EMPLOYEE","ADMIN")
                         .anyRequest().permitAll()
