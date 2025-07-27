@@ -9,6 +9,10 @@ public class LoginRequestDTO {
         this.password = password;
     }
 
+    public LoginRequestDTO() {
+
+    }
+
     public String getUsername() {
         return username;
     }
