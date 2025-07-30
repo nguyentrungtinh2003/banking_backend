@@ -1,8 +1,8 @@
 package com.TrungTinhBackend.banking_backend.Controller;
 
-import com.TrungTinhBackend.banking_backend.RequestDTO.LoginRequestDTO;
-import com.TrungTinhBackend.banking_backend.RequestDTO.RegisterRequestDTO;
-import com.TrungTinhBackend.banking_backend.RequestDTO.UserRequestDTO;
+import com.TrungTinhBackend.banking_backend.RequestDTO.LoginDTO;
+import com.TrungTinhBackend.banking_backend.RequestDTO.RegisterDTO;
+import com.TrungTinhBackend.banking_backend.RequestDTO.UserDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
 import com.TrungTinhBackend.banking_backend.Service.User.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,13 +24,13 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/auth/register")
-    public ResponseEntity<APIResponse> register(@RequestPart(value = "user") RegisterRequestDTO registerRequestDTO,
+    public ResponseEntity<APIResponse> register(@RequestPart(value = "user") RegisterDTO registerDTO,
                                                 @RequestPart(value = "img",required = false) MultipartFile img) throws IOException {
-        return ResponseEntity.ok(userService.register(registerRequestDTO,img));
+        return ResponseEntity.ok(userService.register(registerDTO,img));
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<APIResponse> login(@RequestBody LoginRequestDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request) {
+    public ResponseEntity<APIResponse> login(@RequestBody LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request) {
         return ResponseEntity.ok(userService.login(loginRequestDTO,response,request));
     }
 
@@ -47,9 +47,9 @@ public class UserController {
 
     @PutMapping("/customer/user/update/{id}")
     public ResponseEntity<APIResponse> updateUser(@PathVariable Long id,
-                                              @RequestPart(value = "user") UserRequestDTO userRequestDTO,
-                                              @RequestPart(value = "img",required = false) MultipartFile img) throws IOException {
-        return ResponseEntity.ok(userService.updateUser(id,userRequestDTO,img));
+                                              @RequestPart(value = "user") UserDTO userRequestDTO,
+                                              @RequestPart(value = "img",required = false) MultipartFile img, Authentication authentication) throws IOException {
+        return ResponseEntity.ok(userService.updateUser(id,userRequestDTO,img,authentication));
     }
 
     @DeleteMapping("/customer/user/delete/{id}")

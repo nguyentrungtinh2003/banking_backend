@@ -1,15 +1,15 @@
 package com.TrungTinhBackend.banking_backend.RequestDTO;
 
-public class LoginRequestDTO {
+public class LoginDTO {
     private String username;
     private String password;
 
-    public LoginRequestDTO(String username, String password) {
+    public LoginDTO(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public LoginRequestDTO() {
+    public LoginDTO() {
 
     }
 

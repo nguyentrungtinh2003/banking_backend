@@ -4,11 +4,10 @@ import com.TrungTinhBackend.banking_backend.Entity.User;
 import com.TrungTinhBackend.banking_backend.Enum.Role;
 import com.TrungTinhBackend.banking_backend.Exception.NotFoundException;
 import com.TrungTinhBackend.banking_backend.Repository.UserRepository;
-import com.TrungTinhBackend.banking_backend.RequestDTO.LoginRequestDTO;
-import com.TrungTinhBackend.banking_backend.RequestDTO.RegisterRequestDTO;
-import com.TrungTinhBackend.banking_backend.RequestDTO.UserRequestDTO;
+import com.TrungTinhBackend.banking_backend.RequestDTO.LoginDTO;
+import com.TrungTinhBackend.banking_backend.RequestDTO.RegisterDTO;
+import com.TrungTinhBackend.banking_backend.RequestDTO.UserDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
-import com.TrungTinhBackend.banking_backend.ResponseDTO.UserResponseDTO;
 import com.TrungTinhBackend.banking_backend.Service.Img.ImgService;
 import com.TrungTinhBackend.banking_backend.Service.Jwt.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService{
     private ImgService imgService;
 
     @Override
-    public APIResponse register(RegisterRequestDTO registerRequestDTO, MultipartFile img) throws IOException {
+    public APIResponse register(RegisterDTO registerRequestDTO, MultipartFile img) throws IOException {
         APIResponse apiResponse = new APIResponse();
 
         User user = userRepository.findByCitizenId(registerRequestDTO.getCitizenId());
@@ -113,7 +112,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public APIResponse login(LoginRequestDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request) {
+    public APIResponse login(LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request) {
         APIResponse apiResponse = new APIResponse();
 
         User user = userRepository.findByUsernameAndDeletedFalse(loginRequestDTO.getUsername());
@@ -140,28 +139,9 @@ public class UserServiceImpl implements UserService{
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<User> userPage = userRepository.findAll(pageable);
 
-        Page<UserResponseDTO> userResponseDTOPage = userPage.map(user -> {
-            UserResponseDTO userResponseDTO = new UserResponseDTO();
-                    userResponseDTO.setId(user.getId());
-                    userResponseDTO.setUsername(user.getUsername());
-                    userResponseDTO.setAddress(user.getAddress());
-                    userResponseDTO.setEmail(user.getEmail());
-                    userResponseDTO.setPhone(user.getPhone());
-                    userResponseDTO.setBirthday(user.getBirthday());
-                    userResponseDTO.setCitizenId(user.getCitizenId());
-                    userResponseDTO.setRole(user.getRole());
-                    userResponseDTO.setGender(user.getGender());
-                    userResponseDTO.setImg(user.getImg());
-                    userResponseDTO.setDeleted(user.isDeleted());
-                    userResponseDTO.setCreatedAt(user.getCreatedAt());
-                    userResponseDTO.setUpdatedAt(user.getUpdatedAt());
-                    return userResponseDTO;
-                }
-        );
-
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Get user by page "+page+" size "+size+" success");
-        apiResponse.setData(userResponseDTOPage);
+        apiResponse.setData(userPage);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }
@@ -171,36 +151,34 @@ public class UserServiceImpl implements UserService{
         APIResponse apiResponse = new APIResponse();
 
         UserDetails userDetails =(UserDetails) authentication.getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername());
-        if(!user.getId().equals(id) && !user.getRole().equals(Role.ADMIN) || !user.getRole().equals(Role.EMPLOYEE)) {
+        User authUser = userRepository.findByCitizenId(userDetails.getUsername());
+
+        if(!authUser.getId().equals(id) && !authUser.getRole().equals(Role.ADMIN) || !authUser.getRole().equals(Role.EMPLOYEE)) {
             throw new AccessDeniedException("Bạn không có quyền truy cập");
         }
 
-                    UserResponseDTO userResponseDTO = new UserResponseDTO();
-                    userResponseDTO.setId(user.getId());
-                    userResponseDTO.setUsername(user.getUsername());
-                    userResponseDTO.setAddress(user.getAddress());
-                    userResponseDTO.setEmail(user.getEmail());
-                    userResponseDTO.setPhone(user.getPhone());
-                    userResponseDTO.setBirthday(user.getBirthday());
-                    userResponseDTO.setCitizenId(user.getCitizenId());
-                    userResponseDTO.setRole(user.getRole());
-                    userResponseDTO.setGender(user.getGender());
-                    userResponseDTO.setImg(user.getImg());
-                    userResponseDTO.setDeleted(user.isDeleted());
-                    userResponseDTO.setCreatedAt(user.getCreatedAt());
-                    userResponseDTO.setUpdatedAt(user.getUpdatedAt());
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("User not found")
+        );
 
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Get user by id "+id+" success");
-        apiResponse.setData(userResponseDTO);
+        apiResponse.setData(user);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }
 
     @Override
-    public APIResponse updateUser(Long id, UserRequestDTO userRequestDTO, MultipartFile img) throws IOException {
+    public APIResponse updateUser(Long id, UserDTO userRequestDTO, MultipartFile img, Authentication authentication) throws IOException {
         APIResponse apiResponse = new APIResponse();
+
+        UserDetails userDetails = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+
+        User authUser = userRepository.findByCitizenId(userDetails.getUsername());
+
+        if(!authUser.getId().equals(id) && !authUser.getRole().equals(Role.ADMIN) || !authUser.getRole().equals(Role.EMPLOYEE)) {
+            throw new AccessDeniedException("Bạn không có quyên thực hiên");
+        }
 
         User user1 = userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("User not found")
@@ -239,7 +217,9 @@ public class UserServiceImpl implements UserService{
         }
 
         if (userRequestDTO.getRole() != null) {
-            user1.setRole(userRequestDTO.getRole());
+            if(authUser.getRole().equals(Role.ADMIN)) {
+                user1.setRole(userRequestDTO.getRole());
+            }
         }else {
             user1.setRole(Role.CUSTOMER);
         }
@@ -263,7 +243,7 @@ public class UserServiceImpl implements UserService{
         APIResponse apiResponse = new APIResponse();
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername());
+        User user = userRepository.findByCitizenId(userDetails.getUsername());
 
         if(!user.getRole().equals(Role.ADMIN) && !user.getRole().equals(Role.EMPLOYEE) ) {
             throw new AccessDeniedException("Bạn không có quyền thực hiện");
@@ -289,7 +269,7 @@ public class UserServiceImpl implements UserService{
         APIResponse apiResponse = new APIResponse();
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername());
+        User user = userRepository.findByCitizenId(userDetails.getUsername());
 
         if(!user.getRole().equals(Role.ADMIN) && !user.getRole().equals(Role.EMPLOYEE) ) {
             throw new AccessDeniedException("Bạn không có quyền thực hiện");

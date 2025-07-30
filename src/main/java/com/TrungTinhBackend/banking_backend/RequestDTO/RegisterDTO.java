@@ -1,15 +1,13 @@
-package com.TrungTinhBackend.banking_backend.ResponseDTO;
+package com.TrungTinhBackend.banking_backend.RequestDTO;
 
 import com.TrungTinhBackend.banking_backend.Enum.Gender;
 import com.TrungTinhBackend.banking_backend.Enum.Role;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-public class UserResponseDTO {
+public class RegisterDTO {
 
-    private Long id;
     private String username;
+    private String password;
     private String citizenId;
     private String email;
     private String phone;
@@ -18,14 +16,13 @@ public class UserResponseDTO {
     private Gender gender;
     private String img;
     private Role role;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    private boolean deleted;
+    public RegisterDTO() {
+    }
 
-    public UserResponseDTO(Long id, String username, String citizenId, String email, String phone, LocalDate birthday, String address, Gender gender, String img, Role role, LocalDateTime createdAt, LocalDateTime updatedAt, boolean deleted) {
-        this.id = id;
+    public RegisterDTO(String username, String password, String citizenId, String email, String phone, LocalDate birthday, String address, Gender gender, String img, Role role) {
         this.username = username;
+        this.password = password;
         this.citizenId = citizenId;
         this.email = email;
         this.phone = phone;
@@ -34,20 +31,6 @@ public class UserResponseDTO {
         this.gender = gender;
         this.img = img;
         this.role = role;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deleted = deleted;
-    }
-
-    public UserResponseDTO() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getUsername() {
@@ -56,6 +39,14 @@ public class UserResponseDTO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getCitizenId() {
@@ -120,29 +111,5 @@ public class UserResponseDTO {
 
     public void setRole(Role role) {
         this.role = role;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 }
