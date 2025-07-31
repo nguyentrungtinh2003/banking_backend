@@ -94,17 +94,91 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public APIResponse updateAccount(Long id, AccountDTO accountDTO, Authentication authentication) {
-        return null;
+    public APIResponse updateAccount(Long id, AccountDTO accountDTO, Authentication authentication) throws AccessDeniedException {
+        APIResponse apiResponse = new APIResponse();
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User authUser = userRepository.findByCitizenId(userDetails.getUsername());
+
+        List<Account> accounts = authUser.getAccounts();
+        Account account = accountRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Account not found")
+        );
+
+        if(!accounts.contains(account) && !(authUser.getRole().equals(Role.ADMIN) || authUser.getRole().equals(Role.EMPLOYEE))) {
+            throw new AccessDeniedException("Bạn không có quyền truy cập");
+        }
+
+        if(accountDTO.getBalance() != null && !accountDTO.getBalance().isInfinite()) {
+            account.setBalance(accountDTO.getBalance());
+        }
+        if(accountDTO.getAccountNumber() != null && !accountDTO.getAccountNumber().isEmpty()) {
+            account.setAccountNumber(accountDTO.getAccountNumber());
+        }
+        account.setUpdatedAt(LocalDateTime.now());
+
+        accountRepository.save(account);
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setMessage("Update account success");
+        apiResponse.setTimestamp(LocalDateTime.now());
+
+        return apiResponse;
     }
 
     @Override
-    public APIResponse deleteAccount(Long id, Authentication authentication) {
-        return null;
+    public APIResponse deleteAccount(Long id, Authentication authentication) throws AccessDeniedException {
+        APIResponse apiResponse = new APIResponse();
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User authUser = userRepository.findByCitizenId(userDetails.getUsername());
+
+        Account account = accountRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Account not found")
+        );
+        if(!(authUser.getRole().equals(Role.ADMIN) || authUser.getRole().equals(Role.EMPLOYEE))) {
+            throw new AccessDeniedException("Bạn không có quyền truy cập");
+        }
+
+        if(!account.isDeleted()) {
+            account.setDeleted(true);
+            accountRepository.save(account);
+            apiResponse.setMessage("Delete account id "+id+" success");
+        }else {
+            apiResponse.setMessage("Tài khoản id "+id+" đã xoá trước đó");
+        }
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setTimestamp(LocalDateTime.now());
+
+        return apiResponse;
     }
 
     @Override
-    public APIResponse restoreAccount(Long id, Authentication authentication) {
-        return null;
+    public APIResponse restoreAccount(Long id, Authentication authentication) throws AccessDeniedException {
+        APIResponse apiResponse = new APIResponse();
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User authUser = userRepository.findByCitizenId(userDetails.getUsername());
+
+        Account account = accountRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Account not found")
+        );
+        if(!(authUser.getRole().equals(Role.ADMIN) || authUser.getRole().equals(Role.EMPLOYEE))) {
+            throw new AccessDeniedException("Bạn không có quyền truy cập");
+        }
+
+        if(account.isDeleted()) {
+            account.setDeleted(false);
+            accountRepository.save(account);
+            apiResponse.setMessage("Restore account id "+id+" success");
+        }else {
+            apiResponse.setMessage("Tài khoản id "+id+" chưa bị xoá");
+        }
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setTimestamp(LocalDateTime.now());
+
+        return apiResponse;
     }
 }

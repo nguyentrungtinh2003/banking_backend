@@ -10,7 +10,7 @@ public interface AccountService {
     APIResponse addAccount(AccountDTO accountDTO);
     APIResponse getAccountByPage(int page,int size);
     APIResponse getAccountById(Long id, Authentication authentication) throws AccessDeniedException;
-    APIResponse updateAccount(Long id, AccountDTO accountDTO, Authentication authentication);
-    APIResponse deleteAccount(Long id, Authentication authentication);
-    APIResponse restoreAccount(Long id, Authentication authentication);
+    APIResponse updateAccount(Long id, AccountDTO accountDTO, Authentication authentication) throws AccessDeniedException;
+    APIResponse deleteAccount(Long id, Authentication authentication) throws AccessDeniedException;
+    APIResponse restoreAccount(Long id, Authentication authentication) throws AccessDeniedException;
 }
