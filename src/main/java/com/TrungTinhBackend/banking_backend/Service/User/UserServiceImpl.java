@@ -1,15 +1,18 @@
 package com.TrungTinhBackend.banking_backend.Service.User;
 
 import com.TrungTinhBackend.banking_backend.Entity.User;
+import com.TrungTinhBackend.banking_backend.Enum.LogAction;
 import com.TrungTinhBackend.banking_backend.Enum.Role;
 import com.TrungTinhBackend.banking_backend.Exception.NotFoundException;
 import com.TrungTinhBackend.banking_backend.Repository.UserRepository;
+import com.TrungTinhBackend.banking_backend.RequestDTO.LogDTO;
 import com.TrungTinhBackend.banking_backend.RequestDTO.LoginDTO;
 import com.TrungTinhBackend.banking_backend.RequestDTO.RegisterDTO;
 import com.TrungTinhBackend.banking_backend.RequestDTO.UserDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
 import com.TrungTinhBackend.banking_backend.Service.Img.ImgService;
 import com.TrungTinhBackend.banking_backend.Service.Jwt.JwtUtils;
+import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +50,11 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private ImgService imgService;
 
+    @Autowired
+    private LogService logService;
+
     @Override
-    public APIResponse register(RegisterDTO registerRequestDTO, MultipartFile img) throws IOException {
+    public APIResponse register(RegisterDTO registerRequestDTO, MultipartFile img,HttpServletRequest request,Authentication authentication) throws IOException {
         APIResponse apiResponse = new APIResponse();
 
         User user = userRepository.findByCitizenId(registerRequestDTO.getCitizenId());
@@ -105,6 +111,19 @@ public class UserServiceImpl implements UserService{
 
         userRepository.save(user1);
 
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.REGISTER,
+                "User register citizenId = "+registerRequestDTO.getCitizenId(),
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
+
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Register success");
         apiResponse.setTimestamp(LocalDateTime.now());
@@ -112,7 +131,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public APIResponse login(LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request) {
+    public APIResponse login(LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request, Authentication authentication) {
         APIResponse apiResponse = new APIResponse();
 
         User user = userRepository.findByUsernameAndDeletedFalse(loginRequestDTO.getUsername());
@@ -124,6 +143,19 @@ public class UserServiceImpl implements UserService{
                 loginRequestDTO.getPassword()));
 
         String token = jwtUtils.generateToken(user);
+
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.LOGIN,
+                "User login citizenId = "+loginRequestDTO.getUsername(),
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
 
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Login success");
@@ -169,7 +201,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public APIResponse updateUser(Long id, UserDTO userRequestDTO, MultipartFile img, Authentication authentication) throws IOException {
+    public APIResponse updateUser(Long id, UserDTO userRequestDTO, MultipartFile img,HttpServletRequest request, Authentication authentication) throws IOException {
         APIResponse apiResponse = new APIResponse();
 
         UserDetails userDetails = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
@@ -232,6 +264,19 @@ public class UserServiceImpl implements UserService{
 
         userRepository.save(user1);
 
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.UPDATE,
+                "Update user id = "+id,
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
+
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Update user id "+id+" success");
         apiResponse.setTimestamp(LocalDateTime.now());
@@ -239,7 +284,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public APIResponse deleteUser(Long id,Authentication authentication) throws AccessDeniedException {
+    public APIResponse deleteUser(Long id,HttpServletRequest request,Authentication authentication) throws AccessDeniedException {
         APIResponse apiResponse = new APIResponse();
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -258,6 +303,19 @@ public class UserServiceImpl implements UserService{
         }
         userRepository.save(ownerUser);
 
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.DELETE,
+                "Delete user id = "+id,
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
+
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Delete user id "+id+" success");
         apiResponse.setTimestamp(LocalDateTime.now());
@@ -265,7 +323,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public APIResponse restoreUser(Long id,Authentication authentication) throws AccessDeniedException {
+    public APIResponse restoreUser(Long id,HttpServletRequest request,Authentication authentication) throws AccessDeniedException {
         APIResponse apiResponse = new APIResponse();
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -283,6 +341,19 @@ public class UserServiceImpl implements UserService{
             ownerUser.setDeleted(false);
         }
         userRepository.save(ownerUser);
+
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.RESTORE,
+                "Restore user id = "+id,
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
 
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Restore user id "+id+" success");

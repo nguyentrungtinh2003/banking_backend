@@ -1,21 +1,19 @@
-package com.TrungTinhBackend.banking_backend.Entity;
+package com.TrungTinhBackend.banking_backend.RequestDTO;
 
+import com.TrungTinhBackend.banking_backend.Entity.User;
 import com.TrungTinhBackend.banking_backend.Enum.LogAction;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDateTime;
 
-@Entity
-public class Log {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class LogDTO {
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Long userId;
+    private String username;
+    private String citizenId;
+    private String img;
 
     private LogAction action;
     private String details;
@@ -25,12 +23,15 @@ public class Log {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Log() {
+    public LogDTO() {
     }
 
-    public Log(Long id, User user, LogAction action, String details, String ipAddress, String userAgent, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public LogDTO(Long id, Long userId, String username, String citizenId, String img, LogAction action, String details, String ipAddress, String userAgent, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
-        this.user = user;
+        this.userId = userId;
+        this.username = username;
+        this.citizenId = citizenId;
+        this.img = img;
         this.action = action;
         this.details = details;
         this.ipAddress = ipAddress;
@@ -47,12 +48,36 @@ public class Log {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getCitizenId() {
+        return citizenId;
+    }
+
+    public void setCitizenId(String citizenId) {
+        this.citizenId = citizenId;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 
     public LogAction getAction() {

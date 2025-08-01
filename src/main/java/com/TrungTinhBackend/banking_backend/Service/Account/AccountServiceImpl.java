@@ -2,12 +2,16 @@ package com.TrungTinhBackend.banking_backend.Service.Account;
 
 import com.TrungTinhBackend.banking_backend.Entity.Account;
 import com.TrungTinhBackend.banking_backend.Entity.User;
+import com.TrungTinhBackend.banking_backend.Enum.LogAction;
 import com.TrungTinhBackend.banking_backend.Enum.Role;
 import com.TrungTinhBackend.banking_backend.Exception.NotFoundException;
 import com.TrungTinhBackend.banking_backend.Repository.AccountRepository;
 import com.TrungTinhBackend.banking_backend.Repository.UserRepository;
 import com.TrungTinhBackend.banking_backend.RequestDTO.AccountDTO;
+import com.TrungTinhBackend.banking_backend.RequestDTO.LogDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
+import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
@@ -32,8 +36,11 @@ public class AccountServiceImpl implements AccountService{
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private LogService logService;
+
     @Override
-    public APIResponse addAccount(AccountDTO accountDTO) {
+    public APIResponse addAccount(AccountDTO accountDTO, HttpServletRequest request, Authentication authentication) {
         APIResponse apiResponse = new APIResponse();
 
         User user = userRepository.findByCitizenId(accountDTO.getCitizenId());
@@ -51,6 +58,19 @@ public class AccountServiceImpl implements AccountService{
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Add account success");
         apiResponse.setTimestamp(LocalDateTime.now());
+
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.ADD,
+                "Add account citizenId = "+accountDTO.getCitizenId(),
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
 
         return apiResponse;
     }
@@ -94,7 +114,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public APIResponse updateAccount(Long id, AccountDTO accountDTO, Authentication authentication) throws AccessDeniedException {
+    public APIResponse updateAccount(Long id, AccountDTO accountDTO, HttpServletRequest request,Authentication authentication) throws AccessDeniedException {
         APIResponse apiResponse = new APIResponse();
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -119,6 +139,19 @@ public class AccountServiceImpl implements AccountService{
 
         accountRepository.save(account);
 
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.UPDATE,
+                "Update account id = "+id,
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
+
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Update account success");
         apiResponse.setTimestamp(LocalDateTime.now());
@@ -127,7 +160,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public APIResponse deleteAccount(Long id, Authentication authentication) throws AccessDeniedException {
+    public APIResponse deleteAccount(Long id, HttpServletRequest request,Authentication authentication) throws AccessDeniedException {
         APIResponse apiResponse = new APIResponse();
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -148,6 +181,19 @@ public class AccountServiceImpl implements AccountService{
             apiResponse.setMessage("Tài khoản id "+id+" đã xoá trước đó");
         }
 
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.DELETE,
+                "Delete account id = "+id,
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
+
         apiResponse.setStatusCode(200);
         apiResponse.setTimestamp(LocalDateTime.now());
 
@@ -155,7 +201,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public APIResponse restoreAccount(Long id, Authentication authentication) throws AccessDeniedException {
+    public APIResponse restoreAccount(Long id, HttpServletRequest request,Authentication authentication) throws AccessDeniedException {
         APIResponse apiResponse = new APIResponse();
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -175,6 +221,19 @@ public class AccountServiceImpl implements AccountService{
         }else {
             apiResponse.setMessage("Tài khoản id "+id+" chưa bị xoá");
         }
+
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.RESTORE,
+                "Restore account id = "+id,
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
 
         apiResponse.setStatusCode(200);
         apiResponse.setTimestamp(LocalDateTime.now());

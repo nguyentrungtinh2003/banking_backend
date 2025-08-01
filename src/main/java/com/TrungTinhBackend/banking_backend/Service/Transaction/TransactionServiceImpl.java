@@ -3,6 +3,7 @@ package com.TrungTinhBackend.banking_backend.Service.Transaction;
 import com.TrungTinhBackend.banking_backend.Entity.Account;
 import com.TrungTinhBackend.banking_backend.Entity.Transaction;
 import com.TrungTinhBackend.banking_backend.Entity.User;
+import com.TrungTinhBackend.banking_backend.Enum.LogAction;
 import com.TrungTinhBackend.banking_backend.Enum.Role;
 import com.TrungTinhBackend.banking_backend.Enum.TransactionStatus;
 import com.TrungTinhBackend.banking_backend.Enum.TransactionType;
@@ -10,8 +11,11 @@ import com.TrungTinhBackend.banking_backend.Exception.NotFoundException;
 import com.TrungTinhBackend.banking_backend.Repository.AccountRepository;
 import com.TrungTinhBackend.banking_backend.Repository.TransactionRepository;
 import com.TrungTinhBackend.banking_backend.Repository.UserRepository;
+import com.TrungTinhBackend.banking_backend.RequestDTO.LogDTO;
 import com.TrungTinhBackend.banking_backend.RequestDTO.TransactionDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
+import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,9 +42,12 @@ public class TransactionServiceImpl implements TransactionService{
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private LogService logService;
+
     @Override
     @Transactional
-    public APIResponse deposit(TransactionDTO transactionDTO) {
+    public APIResponse deposit(TransactionDTO transactionDTO, HttpServletRequest request, Authentication authentication) {
         APIResponse apiResponse = new APIResponse();
 
         Account account = accountRepository.findById(transactionDTO.getToAccountId()).orElseThrow(
@@ -61,6 +68,19 @@ public class TransactionServiceImpl implements TransactionService{
 
         transactionRepository.save(transaction);
 
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.DEPOSIT,
+                "UserId =  "+transactionDTO.getToAccountId()+ " increase amount = "+transactionDTO.getAmount(),
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
+
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Deposit success");
         apiResponse.setTimestamp(LocalDateTime.now());
@@ -69,7 +89,7 @@ public class TransactionServiceImpl implements TransactionService{
 
     @Override
     @Transactional
-    public APIResponse withdraw(TransactionDTO transactionDTO) {
+    public APIResponse withdraw(TransactionDTO transactionDTO,HttpServletRequest request,Authentication authentication) {
         APIResponse apiResponse = new APIResponse();
 
         Account account = accountRepository.findById(transactionDTO.getToAccountId()).orElseThrow(
@@ -93,6 +113,19 @@ public class TransactionServiceImpl implements TransactionService{
 
         transactionRepository.save(transaction);
 
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.WITHDRAW,
+                "UserId =  "+transactionDTO.getFromAccountId()+ " decrease amount = "+transactionDTO.getAmount(),
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
+
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Withdraw success");
         apiResponse.setTimestamp(LocalDateTime.now());
@@ -101,7 +134,7 @@ public class TransactionServiceImpl implements TransactionService{
 
     @Override
     @Transactional
-    public APIResponse transfer(TransactionDTO transactionDTO, Authentication authentication) throws AccessDeniedException, IllegalAccessException {
+    public APIResponse transfer(TransactionDTO transactionDTO, HttpServletRequest request,Authentication authentication) throws AccessDeniedException, IllegalAccessException {
         APIResponse apiResponse = new APIResponse();
 
         Account fromAccount = accountRepository.findById(transactionDTO.getFromAccountId()).orElseThrow(
@@ -143,6 +176,19 @@ public class TransactionServiceImpl implements TransactionService{
         transaction.setUpdatedAt(LocalDateTime.now());
 
         transactionRepository.save(transaction);
+
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.TRANSFER,
+                "From accountId = "+transactionDTO.getFromAccountId() + " to accountId = "+transactionDTO.getToAccountId()+" amount = "+transactionDTO.getAmount(),
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
 
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Transfer success");

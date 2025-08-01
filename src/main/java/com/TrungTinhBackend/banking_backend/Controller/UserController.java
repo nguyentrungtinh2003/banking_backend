@@ -1,9 +1,12 @@
 package com.TrungTinhBackend.banking_backend.Controller;
 
+import com.TrungTinhBackend.banking_backend.Enum.LogAction;
+import com.TrungTinhBackend.banking_backend.RequestDTO.LogDTO;
 import com.TrungTinhBackend.banking_backend.RequestDTO.LoginDTO;
 import com.TrungTinhBackend.banking_backend.RequestDTO.RegisterDTO;
 import com.TrungTinhBackend.banking_backend.RequestDTO.UserDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
+import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
 import com.TrungTinhBackend.banking_backend.Service.User.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,13 +28,13 @@ public class UserController {
 
     @PostMapping("/auth/register")
     public ResponseEntity<APIResponse> register(@RequestPart(value = "user") RegisterDTO registerDTO,
-                                                @RequestPart(value = "img",required = false) MultipartFile img) throws IOException {
-        return ResponseEntity.ok(userService.register(registerDTO,img));
+                                                @RequestPart(value = "img",required = false) MultipartFile img,HttpServletRequest request,Authentication authentication) throws IOException {
+        return ResponseEntity.ok(userService.register(registerDTO,img,request,authentication));
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<APIResponse> login(@RequestBody LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request) {
-        return ResponseEntity.ok(userService.login(loginRequestDTO,response,request));
+    public ResponseEntity<APIResponse> login(@RequestBody LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request,Authentication authentication) {
+        return ResponseEntity.ok(userService.login(loginRequestDTO,response,request,authentication));
     }
 
     @GetMapping("/employee/user/page")
@@ -48,17 +51,17 @@ public class UserController {
     @PutMapping("/customer/user/update/{id}")
     public ResponseEntity<APIResponse> updateUser(@PathVariable Long id,
                                               @RequestPart(value = "user") UserDTO userRequestDTO,
-                                              @RequestPart(value = "img",required = false) MultipartFile img, Authentication authentication) throws IOException {
-        return ResponseEntity.ok(userService.updateUser(id,userRequestDTO,img,authentication));
+                                              @RequestPart(value = "img",required = false) MultipartFile img,HttpServletRequest request, Authentication authentication) throws IOException {
+        return ResponseEntity.ok(userService.updateUser(id,userRequestDTO,img,request,authentication));
     }
 
     @DeleteMapping("/customer/user/delete/{id}")
-    public ResponseEntity<APIResponse> deleteUser(@PathVariable Long id, Authentication authentication) throws AccessDeniedException {
-        return ResponseEntity.ok(userService.deleteUser(id,authentication));
+    public ResponseEntity<APIResponse> deleteUser(@PathVariable Long id,HttpServletRequest request, Authentication authentication) throws AccessDeniedException {
+        return ResponseEntity.ok(userService.deleteUser(id,request,authentication));
     }
 
     @PutMapping("/customer/user/restore/{id}")
-    public ResponseEntity<APIResponse> restoreUser(@PathVariable Long id, Authentication authentication) throws AccessDeniedException {
-        return ResponseEntity.ok(userService.restoreUser(id,authentication));
+    public ResponseEntity<APIResponse> restoreUser(@PathVariable Long id,HttpServletRequest request, Authentication authentication) throws AccessDeniedException {
+        return ResponseEntity.ok(userService.restoreUser(id,request,authentication));
     }
 }
