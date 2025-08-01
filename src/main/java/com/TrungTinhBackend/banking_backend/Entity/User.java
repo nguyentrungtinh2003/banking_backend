@@ -2,6 +2,7 @@ package com.TrungTinhBackend.banking_backend.Entity;
 
 import com.TrungTinhBackend.banking_backend.Enum.Gender;
 import com.TrungTinhBackend.banking_backend.Enum.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,6 +36,7 @@ public class User implements UserDetails {
     private boolean deleted;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Account> accounts;
 
     @Override

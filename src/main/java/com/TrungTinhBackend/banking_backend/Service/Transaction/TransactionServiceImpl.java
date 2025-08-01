@@ -3,6 +3,7 @@ package com.TrungTinhBackend.banking_backend.Service.Transaction;
 import com.TrungTinhBackend.banking_backend.Entity.Account;
 import com.TrungTinhBackend.banking_backend.Entity.Transaction;
 import com.TrungTinhBackend.banking_backend.Entity.User;
+import com.TrungTinhBackend.banking_backend.Enum.Role;
 import com.TrungTinhBackend.banking_backend.Enum.TransactionStatus;
 import com.TrungTinhBackend.banking_backend.Enum.TransactionType;
 import com.TrungTinhBackend.banking_backend.Exception.NotFoundException;
@@ -12,6 +13,10 @@ import com.TrungTinhBackend.banking_backend.Repository.UserRepository;
 import com.TrungTinhBackend.banking_backend.RequestDTO.TransactionDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -147,11 +152,36 @@ public class TransactionServiceImpl implements TransactionService{
 
     @Override
     public APIResponse getTransactionByPage(int page, int size) {
-        return null;
+        APIResponse apiResponse = new APIResponse();
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Page<Transaction> transactions = transactionRepository.findAll(pageable);
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setMessage("Get transaction by page "+page+" size "+size+" success");
+        apiResponse.setData(transactions);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
     }
 
     @Override
-    public APIResponse getTransactionById(Long id, Authentication authentication) {
-        return null;
+    public APIResponse getTransactionById(Long id, Authentication authentication) throws AccessDeniedException {
+        APIResponse apiResponse = new APIResponse();
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User authUser = userRepository.findByCitizenId(userDetails.getUsername());
+        if(!authUser.getRole().equals(Role.ADMIN) && !authUser.getRole().equals(Role.EMPLOYEE)) {
+            throw new AccessDeniedException("Bạn không có quyền truy cập");
+        }
+
+        Transaction transactions = transactionRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Transaction not found")
+        );
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setMessage("Get transaction by id "+id+" success");
+        apiResponse.setData(transactions);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
     }
 }

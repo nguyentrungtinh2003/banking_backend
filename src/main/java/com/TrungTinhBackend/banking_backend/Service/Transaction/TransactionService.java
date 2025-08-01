@@ -11,5 +11,5 @@ public interface TransactionService {
     APIResponse withdraw(TransactionDTO transactionDTO);
     APIResponse transfer(TransactionDTO transactionDTO, Authentication authentication) throws AccessDeniedException, IllegalAccessException;
     APIResponse getTransactionByPage(int page, int size);
-    APIResponse getTransactionById(Long id, Authentication authentication);
+    APIResponse getTransactionById(Long id, Authentication authentication) throws AccessDeniedException;
 }
