@@ -11,6 +11,7 @@ import com.TrungTinhBackend.banking_backend.Service.User.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/auth/register")
+    @PostMapping(value = "/auth/register",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<APIResponse> register(@RequestPart(value = "user") RegisterDTO registerDTO,
                                                 @RequestPart(value = "img",required = false) MultipartFile img,HttpServletRequest request,Authentication authentication) throws IOException {
         return ResponseEntity.ok(userService.register(registerDTO,img,request,authentication));
@@ -48,7 +49,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id,authentication));
     }
 
-    @PutMapping("/customer/user/update/{id}")
+    @PutMapping(value = "/customer/user/update/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<APIResponse> updateUser(@PathVariable Long id,
                                               @RequestPart(value = "user") UserDTO userRequestDTO,
                                               @RequestPart(value = "img",required = false) MultipartFile img,HttpServletRequest request, Authentication authentication) throws IOException {

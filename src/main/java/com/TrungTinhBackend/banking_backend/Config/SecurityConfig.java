@@ -1,7 +1,6 @@
 package com.TrungTinhBackend.banking_backend.Config;
 
 import com.TrungTinhBackend.banking_backend.Service.Jwt.JwtAuthFilter;
-import com.TrungTinhBackend.banking_backend.Service.Jwt.JwtUtils;
 import com.TrungTinhBackend.banking_backend.Service.Jwt.UserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +31,6 @@ public class SecurityConfig {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private JwtUtils jwtUtils;
-
-    @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
     @Bean
@@ -45,9 +41,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**","/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/oauth2/**",             // 👈 Cho phép truy cập OAuth2 endpoint
                                 "/login/oauth2/**", "/robots.txt", "/api/ws/**",  "/api/user-google" ).permitAll()
-                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
-                        .requestMatchers("/api/employee/**").hasAnyAuthority("EMPLOYEE","ADMIN")
-                        .requestMatchers("/api/customer/**").hasAnyAuthority("CUSTOMER","EMPLOYEE","ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/employee/**").hasAnyRole("EMPLOYEE","ADMIN")
+                        .requestMatchers("/api/customer/**").hasAnyRole("CUSTOMER","EMPLOYEE","ADMIN")
                         .anyRequest().permitAll()
                 )
         .exceptionHandling(exception -> exception

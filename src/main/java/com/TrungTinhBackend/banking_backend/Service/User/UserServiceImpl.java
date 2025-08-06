@@ -134,12 +134,12 @@ public class UserServiceImpl implements UserService{
     public APIResponse login(LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request, Authentication authentication) {
         APIResponse apiResponse = new APIResponse();
 
-        User user = userRepository.findByUsernameAndDeletedFalse(loginRequestDTO.getUsername());
+        User user = userRepository.findByCitizenId(loginRequestDTO.getCitizenId());
         if(user == null) {
             throw new NotFoundException("User not found");
         }
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(),
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDTO.getCitizenId(),
                 loginRequestDTO.getPassword()));
 
         String token = jwtUtils.generateToken(user);
@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService{
                 null,
                 null,
                 LogAction.LOGIN,
-                "User login citizenId = "+loginRequestDTO.getUsername(),
+                "User login userId = "+ user.getId(),
                 null,
                 null,
                 null,

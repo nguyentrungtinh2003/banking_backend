@@ -1,4 +1,6 @@
 package com.TrungTinhBackend.banking_backend.ResponseDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 
 public class APIResponse {
@@ -7,6 +9,7 @@ public class APIResponse {
     private String message;
     private Object data;
     private String token;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timestamp;
 
     public APIResponse() {

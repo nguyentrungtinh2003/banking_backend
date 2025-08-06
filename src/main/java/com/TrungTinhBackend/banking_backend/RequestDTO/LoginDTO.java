@@ -1,11 +1,11 @@
 package com.TrungTinhBackend.banking_backend.RequestDTO;
 
 public class LoginDTO {
-    private String username;
+    private String citizenId;
     private String password;
 
-    public LoginDTO(String username, String password) {
-        this.username = username;
+    public LoginDTO(String citizenId, String password) {
+        this.citizenId = citizenId;
         this.password = password;
     }
 
@@ -13,12 +13,12 @@ public class LoginDTO {
 
     }
 
-    public String getUsername() {
-        return username;
+    public String getCitizenId() {
+        return citizenId;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setCitizenId(String citizenId) {
+        this.citizenId = citizenId;
     }
 
     public String getPassword() {
