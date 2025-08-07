@@ -185,7 +185,7 @@ public class UserServiceImpl implements UserService{
         UserDetails userDetails =(UserDetails) authentication.getPrincipal();
         User authUser = userRepository.findByCitizenId(userDetails.getUsername());
 
-        if(!authUser.getId().equals(id) && !authUser.getRole().equals(Role.ADMIN) || !authUser.getRole().equals(Role.EMPLOYEE)) {
+        if(!authUser.getId().equals(id) && !(authUser.getRole().equals(Role.ADMIN) || authUser.getRole().equals(Role.EMPLOYEE))) {
             throw new AccessDeniedException("Bạn không có quyền truy cập");
         }
 
@@ -208,7 +208,7 @@ public class UserServiceImpl implements UserService{
 
         User authUser = userRepository.findByCitizenId(userDetails.getUsername());
 
-        if(!authUser.getId().equals(id) && !authUser.getRole().equals(Role.ADMIN) || !authUser.getRole().equals(Role.EMPLOYEE)) {
+        if(!authUser.getId().equals(id) && !(authUser.getRole().equals(Role.ADMIN) || authUser.getRole().equals(Role.EMPLOYEE))) {
             throw new AccessDeniedException("Bạn không có quyên thực hiên");
         }
 

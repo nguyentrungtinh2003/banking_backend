@@ -56,12 +56,12 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id,userRequestDTO,img,request,authentication));
     }
 
-    @DeleteMapping("/customer/user/delete/{id}")
+    @DeleteMapping("/employee/user/delete/{id}")
     public ResponseEntity<APIResponse> deleteUser(@PathVariable Long id,HttpServletRequest request, Authentication authentication) throws AccessDeniedException {
         return ResponseEntity.ok(userService.deleteUser(id,request,authentication));
     }
 
-    @PutMapping("/customer/user/restore/{id}")
+    @PutMapping("/employee/user/restore/{id}")
     public ResponseEntity<APIResponse> restoreUser(@PathVariable Long id,HttpServletRequest request, Authentication authentication) throws AccessDeniedException {
         return ResponseEntity.ok(userService.restoreUser(id,request,authentication));
     }

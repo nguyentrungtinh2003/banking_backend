@@ -153,9 +153,6 @@ public class TransactionServiceImpl implements TransactionService{
         User authUser = userRepository.findByCitizenId(userDetails.getUsername());
         List<Account> accounts = authUser.getAccounts();
 
-        if(!accounts.contains(fromAccount)) {
-            throw new AccessDeniedException("Bạn kho có quyền truy cập");
-        }
 
         if(fromAccount.getBalance() < transactionDTO.getAmount()) {
             throw new RuntimeException("Bạn không đư số dư để chuyển");
