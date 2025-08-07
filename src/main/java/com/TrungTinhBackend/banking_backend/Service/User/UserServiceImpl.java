@@ -5,11 +5,9 @@ import com.TrungTinhBackend.banking_backend.Enum.LogAction;
 import com.TrungTinhBackend.banking_backend.Enum.Role;
 import com.TrungTinhBackend.banking_backend.Exception.NotFoundException;
 import com.TrungTinhBackend.banking_backend.Repository.UserRepository;
-import com.TrungTinhBackend.banking_backend.RequestDTO.LogDTO;
-import com.TrungTinhBackend.banking_backend.RequestDTO.LoginDTO;
-import com.TrungTinhBackend.banking_backend.RequestDTO.RegisterDTO;
-import com.TrungTinhBackend.banking_backend.RequestDTO.UserDTO;
+import com.TrungTinhBackend.banking_backend.RequestDTO.*;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
+import com.TrungTinhBackend.banking_backend.Service.Email.EmailService;
 import com.TrungTinhBackend.banking_backend.Service.Img.ImgService;
 import com.TrungTinhBackend.banking_backend.Service.Jwt.JwtUtils;
 import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
@@ -31,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -52,6 +51,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public APIResponse register(RegisterDTO registerRequestDTO, MultipartFile img,HttpServletRequest request,Authentication authentication) throws IOException {
@@ -357,6 +359,85 @@ public class UserServiceImpl implements UserService{
 
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Restore user id "+id+" success");
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse sendOTP(String email,HttpServletRequest request,Authentication authentication) {
+        APIResponse apiResponse = new APIResponse();
+
+        Random random = new Random();
+        int rawOto = 100000 + random.nextInt(900000);
+        String otp = String.valueOf(rawOto);
+
+        emailService.sendMail(email,"Mã OTP của bạn là",otp);
+
+        User user = userRepository.findByEmail(email);
+        if(user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        user.setOtp(otp);
+        user.setExOtp(LocalDateTime.now().plusMinutes(3));
+        userRepository.save(user);
+
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.OTP,
+                "Send OTP with email "+email,
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setMessage("Send OTP success");
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse resetPassword(ResetPassword resetPassword,HttpServletRequest request,Authentication authentication) {
+        APIResponse apiResponse = new APIResponse();
+
+        User user = userRepository.findByEmail(resetPassword.getEmail());
+        if(user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        if(!user.getOtp().equals(resetPassword.getOtp())) {
+            throw new IllegalArgumentException("OTP không hợp lệ");
+        }
+
+        if(user.getExOtp().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("OTP đã hết hạn");
+        }
+
+        user.setPassword(passwordEncoder.encode(resetPassword.getNewPassword()));
+        user.setOtp(null);
+        user.setExOtp(null);
+        userRepository.save(user);
+
+        LogDTO logDTO = new LogDTO(null,
+                null,
+                null,
+                null,
+                null,
+                LogAction.RESET_PASS,
+                "Reset password with email = "+resetPassword.getEmail(),
+                null,
+                null,
+                null,
+                null);
+        logService.addLog(logDTO,request,authentication);
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setMessage("Reset password success");
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }

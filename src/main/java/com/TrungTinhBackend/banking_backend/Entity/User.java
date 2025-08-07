@@ -33,6 +33,9 @@ public class User implements UserDetails {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private String otp;
+    private LocalDateTime exOtp;
+
     private boolean deleted;
 
     @OneToMany(mappedBy = "user")
@@ -78,7 +81,7 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(Long id, String username, String password, String citizenId, String email, String phone, LocalDate birthday, String address, Gender gender, String img, Role role, LocalDateTime createdAt, LocalDateTime updatedAt, boolean deleted, List<Account> accounts) {
+    public User(Long id, String username, String password, String citizenId, String email, String phone, LocalDate birthday, String address, Gender gender, String img, Role role, LocalDateTime createdAt, LocalDateTime updatedAt, String otp, LocalDateTime exOtp, boolean deleted, List<Account> accounts) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -92,6 +95,8 @@ public class User implements UserDetails {
         this.role = role;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.otp = otp;
+        this.exOtp = exOtp;
         this.deleted = deleted;
         this.accounts = accounts;
     }
@@ -206,5 +211,21 @@ public class User implements UserDetails {
 
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public LocalDateTime getExOtp() {
+        return exOtp;
+    }
+
+    public void setExOtp(LocalDateTime exOtp) {
+        this.exOtp = exOtp;
     }
 }

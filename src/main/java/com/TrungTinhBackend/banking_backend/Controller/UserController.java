@@ -1,10 +1,7 @@
 package com.TrungTinhBackend.banking_backend.Controller;
 
 import com.TrungTinhBackend.banking_backend.Enum.LogAction;
-import com.TrungTinhBackend.banking_backend.RequestDTO.LogDTO;
-import com.TrungTinhBackend.banking_backend.RequestDTO.LoginDTO;
-import com.TrungTinhBackend.banking_backend.RequestDTO.RegisterDTO;
-import com.TrungTinhBackend.banking_backend.RequestDTO.UserDTO;
+import com.TrungTinhBackend.banking_backend.RequestDTO.*;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
 import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
 import com.TrungTinhBackend.banking_backend.Service.User.UserService;
@@ -64,5 +61,15 @@ public class UserController {
     @PutMapping("/employee/user/restore/{id}")
     public ResponseEntity<APIResponse> restoreUser(@PathVariable Long id,HttpServletRequest request, Authentication authentication) throws AccessDeniedException {
         return ResponseEntity.ok(userService.restoreUser(id,request,authentication));
+    }
+
+    @PostMapping("/auth/otp/{email}")
+    public ResponseEntity<APIResponse> sendOTP(@PathVariable String email,HttpServletRequest request, Authentication authentication) throws AccessDeniedException {
+        return ResponseEntity.ok(userService.sendOTP(email,request,authentication));
+    }
+
+    @PostMapping("/auth/reset-pass")
+    public ResponseEntity<APIResponse> resetPass(@RequestBody ResetPassword resetPassword, HttpServletRequest request, Authentication authentication) throws AccessDeniedException {
+        return ResponseEntity.ok(userService.resetPassword(resetPassword,request,authentication));
     }
 }

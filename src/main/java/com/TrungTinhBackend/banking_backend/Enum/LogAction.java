@@ -9,6 +9,8 @@ public enum LogAction {
     TRANSFER,
     CREATE,
     VIEW,
+    OTP,
+    RESET_PASS,
     ADD,
     UPDATE,
     DELETE,

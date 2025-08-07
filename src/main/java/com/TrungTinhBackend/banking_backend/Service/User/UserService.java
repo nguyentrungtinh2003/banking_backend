@@ -2,6 +2,7 @@ package com.TrungTinhBackend.banking_backend.Service.User;
 
 import com.TrungTinhBackend.banking_backend.RequestDTO.LoginDTO;
 import com.TrungTinhBackend.banking_backend.RequestDTO.RegisterDTO;
+import com.TrungTinhBackend.banking_backend.RequestDTO.ResetPassword;
 import com.TrungTinhBackend.banking_backend.RequestDTO.UserDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,4 +21,6 @@ public interface UserService {
     APIResponse updateUser(Long id, UserDTO userRequestDTO, MultipartFile img, HttpServletRequest request,Authentication authentication) throws IOException;
     APIResponse deleteUser(Long id, HttpServletRequest request,Authentication authentication) throws AccessDeniedException;
     APIResponse restoreUser(Long id,HttpServletRequest request,Authentication authentication) throws AccessDeniedException;
+    APIResponse sendOTP(String email,HttpServletRequest request,Authentication authentication);
+    APIResponse resetPassword(ResetPassword resetPassword,HttpServletRequest request,Authentication authentication);
 }
