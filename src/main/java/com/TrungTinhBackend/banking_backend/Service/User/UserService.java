@@ -17,6 +17,7 @@ public interface UserService {
     APIResponse register(RegisterDTO registerDTO, MultipartFile img,HttpServletRequest request,Authentication authentication) throws IOException;
     APIResponse login(LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request,Authentication authentication);
     APIResponse getUserByPage(int page, int size);
+    APIResponse searchUser(String keyword,int page, int size);
     APIResponse getUserById(Long id, Authentication authentication) throws AccessDeniedException;
     APIResponse updateUser(Long id, UserDTO userRequestDTO, MultipartFile img, HttpServletRequest request,Authentication authentication) throws IOException;
     APIResponse deleteUser(Long id, HttpServletRequest request,Authentication authentication) throws AccessDeniedException;

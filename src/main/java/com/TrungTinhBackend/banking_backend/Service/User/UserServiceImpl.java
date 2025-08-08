@@ -11,6 +11,7 @@ import com.TrungTinhBackend.banking_backend.Service.Email.EmailService;
 import com.TrungTinhBackend.banking_backend.Service.Img.ImgService;
 import com.TrungTinhBackend.banking_backend.Service.Jwt.JwtUtils;
 import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
+import com.TrungTinhBackend.banking_backend.Service.Specification.User.UserSpecification;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -172,6 +174,21 @@ public class UserServiceImpl implements UserService{
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<User> userPage = userRepository.findAll(pageable);
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setMessage("Get user by page "+page+" size "+size+" success");
+        apiResponse.setData(userPage);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse searchUser(String keyword, int page, int size) {
+        APIResponse apiResponse = new APIResponse();
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Specification<User> specification = UserSpecification.searchByKeyword(keyword);
+        Page<User> userPage = userRepository.findAll(specification,pageable);
 
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Get user by page "+page+" size "+size+" success");

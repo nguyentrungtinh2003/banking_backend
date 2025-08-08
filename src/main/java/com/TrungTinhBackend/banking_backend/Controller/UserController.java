@@ -41,6 +41,13 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserByPage(page,size));
     }
 
+    @GetMapping("/employee/user/search")
+    public ResponseEntity<APIResponse> getUserByPage(@RequestParam String keyword,
+                                                     @RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "6") int size) {
+        return ResponseEntity.ok(userService.searchUser(keyword,page,size));
+    }
+
     @GetMapping("/customer/user/{id}")
     public ResponseEntity<APIResponse> getUserById(@PathVariable Long id, Authentication authentication) throws AccessDeniedException {
         return ResponseEntity.ok(userService.getUserById(id,authentication));
