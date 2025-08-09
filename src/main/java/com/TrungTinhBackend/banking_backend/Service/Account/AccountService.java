@@ -10,6 +10,7 @@ import java.nio.file.AccessDeniedException;
 public interface AccountService {
     APIResponse addAccount(AccountDTO accountDTO, HttpServletRequest request, Authentication authentication);
     APIResponse getAccountByPage(int page,int size);
+    APIResponse filterAccount(String keyword,int page,int size);
     APIResponse getAccountById(Long id, Authentication authentication) throws AccessDeniedException;
     APIResponse updateAccount(Long id, AccountDTO accountDTO, HttpServletRequest request,Authentication authentication) throws AccessDeniedException;
     APIResponse deleteAccount(Long id, HttpServletRequest request,Authentication authentication) throws AccessDeniedException;

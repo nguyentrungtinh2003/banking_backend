@@ -1,6 +1,8 @@
 package com.TrungTinhBackend.banking_backend.Controller;
 
 import com.TrungTinhBackend.banking_backend.Enum.LogAction;
+import com.TrungTinhBackend.banking_backend.Enum.TransactionStatus;
+import com.TrungTinhBackend.banking_backend.Enum.TransactionType;
 import com.TrungTinhBackend.banking_backend.RequestDTO.LogDTO;
 import com.TrungTinhBackend.banking_backend.RequestDTO.TransactionDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
@@ -43,6 +45,14 @@ public class TransactionController {
     public ResponseEntity<APIResponse> getTransactionByPage(@RequestParam(defaultValue = "0") int page,
                                                             @RequestParam(defaultValue = "6") int size) throws AccessDeniedException, IllegalAccessException {
         return ResponseEntity.ok(transactionService.getTransactionByPage(page,size));
+    }
+
+    @GetMapping("/employee/transaction")
+    public ResponseEntity<APIResponse> filterTransaction(@RequestParam(required = false) TransactionType type,
+                                                         @RequestParam(required = false) TransactionStatus status,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "6") int size) throws AccessDeniedException, IllegalAccessException {
+        return ResponseEntity.ok(transactionService.filterTransaction(type,status,page,size));
     }
 
     @GetMapping("/employee/transaction/{id}")

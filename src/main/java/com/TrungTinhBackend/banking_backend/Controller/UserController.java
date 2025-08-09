@@ -1,13 +1,16 @@
 package com.TrungTinhBackend.banking_backend.Controller;
 
+import com.TrungTinhBackend.banking_backend.Enum.Gender;
 import com.TrungTinhBackend.banking_backend.Enum.LogAction;
 import com.TrungTinhBackend.banking_backend.RequestDTO.*;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
 import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
 import com.TrungTinhBackend.banking_backend.Service.User.UserService;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api")
@@ -41,11 +45,13 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserByPage(page,size));
     }
 
-    @GetMapping("/employee/user/search")
-    public ResponseEntity<APIResponse> getUserByPage(@RequestParam String keyword,
+    @GetMapping("/employee/user")
+    public ResponseEntity<APIResponse> filterUser(@RequestParam(required = false) String keyword,
+                                                     @RequestParam(required = false) Gender gender,
+                                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthday,
                                                      @RequestParam(defaultValue = "0") int page,
                                                      @RequestParam(defaultValue = "6") int size) {
-        return ResponseEntity.ok(userService.searchUser(keyword,page,size));
+        return ResponseEntity.ok(userService.filterUser(keyword,gender,birthday,page,size));
     }
 
     @GetMapping("/customer/user/{id}")

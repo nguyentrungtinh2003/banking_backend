@@ -11,6 +11,7 @@ import com.TrungTinhBackend.banking_backend.RequestDTO.AccountDTO;
 import com.TrungTinhBackend.banking_backend.RequestDTO.LogDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
 import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
+import com.TrungTinhBackend.banking_backend.Service.Specification.Account.AccountSpecification;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -84,6 +86,22 @@ public class AccountServiceImpl implements AccountService{
 
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Get account page "+page+" size "+size+" success");
+        apiResponse.setData(accountPage);
+        apiResponse.setTimestamp(LocalDateTime.now());
+
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse filterAccount(String keyword, int page, int size) {
+        APIResponse apiResponse = new APIResponse();
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Specification<Account> specification = AccountSpecification.filterAccount(keyword);
+        Page<Account> accountPage = accountRepository.findAll(specification,pageable);
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setMessage("Filter account success");
         apiResponse.setData(accountPage);
         apiResponse.setTimestamp(LocalDateTime.now());
 

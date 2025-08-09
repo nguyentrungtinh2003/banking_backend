@@ -15,12 +15,14 @@ import com.TrungTinhBackend.banking_backend.RequestDTO.LogDTO;
 import com.TrungTinhBackend.banking_backend.RequestDTO.TransactionDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
 import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
+import com.TrungTinhBackend.banking_backend.Service.Specification.Transaction.TransactionSpecification;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -202,6 +204,21 @@ public class TransactionServiceImpl implements TransactionService{
 
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Get transaction by page "+page+" size "+size+" success");
+        apiResponse.setData(transactions);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse filterTransaction(TransactionType type, TransactionStatus status, int page, int size) {
+        APIResponse apiResponse = new APIResponse();
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Specification<Transaction> specification = TransactionSpecification.filterTransaction(type,status);
+        Page<Transaction> transactions = transactionRepository.findAll(specification,pageable);
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setMessage("Filter transaction success");
         apiResponse.setData(transactions);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;

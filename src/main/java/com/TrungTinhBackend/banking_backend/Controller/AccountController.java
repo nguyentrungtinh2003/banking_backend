@@ -35,6 +35,13 @@ public class AccountController {
         return ResponseEntity.ok(accountService.getAccountByPage(page,size));
     }
 
+    @GetMapping("/employee/account")
+    public ResponseEntity<APIResponse> getAccountByPage(@RequestParam String keyword,
+                                                        @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "6") int size) {
+        return ResponseEntity.ok(accountService.filterAccount(keyword,page,size));
+    }
+
     @GetMapping("/customer/account/{id}")
     public ResponseEntity<APIResponse> getAccountById(@PathVariable Long id, Authentication authentication) throws AccessDeniedException {
         return ResponseEntity.ok(accountService.getAccountById(id,authentication));

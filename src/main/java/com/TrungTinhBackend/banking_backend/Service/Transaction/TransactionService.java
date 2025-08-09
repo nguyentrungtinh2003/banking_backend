@@ -1,5 +1,7 @@
 package com.TrungTinhBackend.banking_backend.Service.Transaction;
 
+import com.TrungTinhBackend.banking_backend.Enum.TransactionStatus;
+import com.TrungTinhBackend.banking_backend.Enum.TransactionType;
 import com.TrungTinhBackend.banking_backend.RequestDTO.TransactionDTO;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,5 +14,6 @@ public interface TransactionService {
     APIResponse withdraw(TransactionDTO transactionDTO,HttpServletRequest request,Authentication authentication);
     APIResponse transfer(TransactionDTO transactionDTO, HttpServletRequest request,Authentication authentication) throws AccessDeniedException, IllegalAccessException;
     APIResponse getTransactionByPage(int page, int size);
+    APIResponse filterTransaction(TransactionType type, TransactionStatus status,int page, int size);
     APIResponse getTransactionById(Long id, Authentication authentication) throws AccessDeniedException;
 }

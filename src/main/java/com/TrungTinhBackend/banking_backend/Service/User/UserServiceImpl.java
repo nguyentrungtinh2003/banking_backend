@@ -1,6 +1,7 @@
 package com.TrungTinhBackend.banking_backend.Service.User;
 
 import com.TrungTinhBackend.banking_backend.Entity.User;
+import com.TrungTinhBackend.banking_backend.Enum.Gender;
 import com.TrungTinhBackend.banking_backend.Enum.LogAction;
 import com.TrungTinhBackend.banking_backend.Enum.Role;
 import com.TrungTinhBackend.banking_backend.Exception.NotFoundException;
@@ -30,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -183,15 +185,15 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public APIResponse searchUser(String keyword, int page, int size) {
+    public APIResponse filterUser(String keyword, Gender gender, LocalDate birthday, int page, int size) {
         APIResponse apiResponse = new APIResponse();
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Specification<User> specification = UserSpecification.searchByKeyword(keyword);
+        Specification<User> specification = UserSpecification.filter(keyword,gender,birthday);
         Page<User> userPage = userRepository.findAll(specification,pageable);
 
         apiResponse.setStatusCode(200);
-        apiResponse.setMessage("Get user by page "+page+" size "+size+" success");
+        apiResponse.setMessage("Filter user success");
         apiResponse.setData(userPage);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
