@@ -16,6 +16,8 @@ import com.TrungTinhBackend.banking_backend.Service.Specification.User.UserSpeci
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -171,6 +173,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Cacheable(value = "userPage")
     public APIResponse getUserByPage(int page, int size) {
         APIResponse apiResponse = new APIResponse();
 
@@ -200,6 +203,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Cacheable(value = "user", key = "#id")
     public APIResponse getUserById(Long id, Authentication authentication) throws AccessDeniedException {
         APIResponse apiResponse = new APIResponse();
 
@@ -222,6 +226,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @CacheEvict(value = {"userPage","user"},allEntries = true)
     public APIResponse updateUser(Long id, UserDTO userRequestDTO, MultipartFile img,HttpServletRequest request, Authentication authentication) throws IOException {
         APIResponse apiResponse = new APIResponse();
 
@@ -305,6 +310,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @CacheEvict(value = {"userPage","user"},allEntries = true)
     public APIResponse deleteUser(Long id,HttpServletRequest request,Authentication authentication) throws AccessDeniedException {
         APIResponse apiResponse = new APIResponse();
 
@@ -344,6 +350,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @CacheEvict(value = {"userPage","user"},allEntries = true)
     public APIResponse restoreUser(Long id,HttpServletRequest request,Authentication authentication) throws AccessDeniedException {
         APIResponse apiResponse = new APIResponse();
 
