@@ -173,6 +173,22 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public APIResponse getUserInfo(UserDetails userDetails) {
+        APIResponse apiResponse = new APIResponse();
+
+        User user = userRepository.findByCitizenId(userDetails.getUsername());
+        if(user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setMessage("get user info success");
+        apiResponse.setData(user);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
     @Cacheable(value = "userPage")
     public APIResponse getUserByPage(int page, int size) {
         APIResponse apiResponse = new APIResponse();

@@ -9,6 +9,7 @@ import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 public interface UserService {
     APIResponse register(RegisterDTO registerDTO, MultipartFile img,HttpServletRequest request,Authentication authentication) throws IOException;
     APIResponse login(LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request,Authentication authentication);
+    APIResponse getUserInfo(UserDetails userDetails);
     APIResponse getUserByPage(int page, int size);
     APIResponse filterUser(String keyword, Gender gender, LocalDate birthday,int page, int size);
     APIResponse getUserById(Long id, Authentication authentication) throws AccessDeniedException;

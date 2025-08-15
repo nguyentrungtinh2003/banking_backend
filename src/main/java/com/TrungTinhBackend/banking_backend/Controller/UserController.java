@@ -14,6 +14,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +39,11 @@ public class UserController {
     @PostMapping("/auth/login")
     public ResponseEntity<APIResponse> login(@RequestBody LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request,Authentication authentication) {
         return ResponseEntity.ok(userService.login(loginRequestDTO,response,request,authentication));
+    }
+
+    @GetMapping("/customer/user-info")
+    public ResponseEntity<APIResponse> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) throws AccessDeniedException {
+        return ResponseEntity.ok(userService.getUserInfo(userDetails));
     }
 
     @GetMapping("/employee/user/page")
