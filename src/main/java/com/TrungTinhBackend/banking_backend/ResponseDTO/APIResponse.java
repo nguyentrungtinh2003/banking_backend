@@ -9,18 +9,28 @@ public class APIResponse {
     private String message;
     private Object data;
     private String token;
+    private String refreshToken;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timestamp;
 
     public APIResponse() {
     }
 
-    public APIResponse(int statusCode, String message, Object data, String token, LocalDateTime timestamp) {
+    public APIResponse(int statusCode, String message, Object data, String token, String refreshToken, LocalDateTime timestamp) {
         this.statusCode = statusCode;
         this.message = message;
         this.data = data;
         this.token = token;
+        this.refreshToken = refreshToken;
         this.timestamp = timestamp;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public void setStatusCode(int statusCode) {

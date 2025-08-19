@@ -1,5 +1,6 @@
 package com.TrungTinhBackend.banking_backend.Service.User;
 
+import com.TrungTinhBackend.banking_backend.Entity.RefreshToken;
 import com.TrungTinhBackend.banking_backend.Entity.User;
 import com.TrungTinhBackend.banking_backend.Enum.Gender;
 import com.TrungTinhBackend.banking_backend.Enum.LogAction;
@@ -12,6 +13,7 @@ import com.TrungTinhBackend.banking_backend.Service.Email.EmailService;
 import com.TrungTinhBackend.banking_backend.Service.Img.ImgService;
 import com.TrungTinhBackend.banking_backend.Service.Jwt.JwtUtils;
 import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
+import com.TrungTinhBackend.banking_backend.Service.RefreshToken.RefreshTokenService;
 import com.TrungTinhBackend.banking_backend.Service.Specification.User.UserSpecification;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,6 +37,8 @@ import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Random;
 
 @Service
@@ -60,6 +64,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private RefreshTokenService refreshTokenService;
 
     @Override
     public APIResponse register(RegisterDTO registerRequestDTO, MultipartFile img,HttpServletRequest request,Authentication authentication) throws IOException {
@@ -151,6 +158,14 @@ public class UserServiceImpl implements UserService{
                 loginRequestDTO.getPassword()));
 
         String token = jwtUtils.generateToken(user);
+        String refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(),user);
+
+        RefreshToken refreshToken1 = new RefreshToken();
+        refreshToken1.setUser(user);
+        refreshToken1.setExpiraDate(new Date());
+        refreshToken1.setToken(refreshToken);
+
+        refreshTokenService.addRefreshToken(refreshToken1);
 
         LogDTO logDTO = new LogDTO(null,
                 null,
@@ -168,6 +183,7 @@ public class UserServiceImpl implements UserService{
         apiResponse.setStatusCode(200);
         apiResponse.setMessage("Login success");
         apiResponse.setToken(token);
+        apiResponse.setRefreshToken(refreshToken);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }

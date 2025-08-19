@@ -1,12 +1,9 @@
 package com.TrungTinhBackend.banking_backend.Controller;
 
 import com.TrungTinhBackend.banking_backend.Enum.Gender;
-import com.TrungTinhBackend.banking_backend.Enum.LogAction;
 import com.TrungTinhBackend.banking_backend.RequestDTO.*;
 import com.TrungTinhBackend.banking_backend.ResponseDTO.APIResponse;
-import com.TrungTinhBackend.banking_backend.Service.Log.LogService;
 import com.TrungTinhBackend.banking_backend.Service.User.UserService;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
