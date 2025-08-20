@@ -85,6 +85,11 @@ public class UserController {
         return ResponseEntity.ok(userService.sendOTP(email,request,authentication));
     }
 
+    @PostMapping("/auth/logout")
+    public ResponseEntity<APIResponse> logout(Authentication authentication) throws AccessDeniedException {
+        return ResponseEntity.ok(userService.logout(authentication));
+    }
+
     @PostMapping("/auth/reset-pass")
     public ResponseEntity<APIResponse> resetPass(@RequestBody ResetPassword resetPassword, HttpServletRequest request, Authentication authentication) throws AccessDeniedException {
         return ResponseEntity.ok(userService.resetPassword(resetPassword,request,authentication));

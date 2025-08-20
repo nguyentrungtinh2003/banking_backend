@@ -189,6 +189,26 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public APIResponse logout(Authentication authentication) throws AccessDeniedException {
+        APIResponse apiResponse = new APIResponse();
+
+
+        if(!authentication.isAuthenticated()) {
+            throw new AccessDeniedException("Bạn chưa đăng nhập");
+        }
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User authUser = userRepository.findByCitizenId(userDetails.getUsername());
+
+        refreshTokenService.deleteRefreshToken(authUser);
+
+        apiResponse.setStatusCode(200);
+        apiResponse.setMessage("Logout success");
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
     public APIResponse getUserInfo(UserDetails userDetails) {
         APIResponse apiResponse = new APIResponse();
 
@@ -198,7 +218,7 @@ public class UserServiceImpl implements UserService{
         }
 
         apiResponse.setStatusCode(200);
-        apiResponse.setMessage("get user info success");
+        apiResponse.setMessage("Get user info success");
         apiResponse.setData(user);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;

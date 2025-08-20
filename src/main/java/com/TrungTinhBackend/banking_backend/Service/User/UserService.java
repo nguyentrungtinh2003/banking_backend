@@ -19,6 +19,7 @@ import java.time.LocalDate;
 public interface UserService {
     APIResponse register(RegisterDTO registerDTO, MultipartFile img,HttpServletRequest request,Authentication authentication) throws IOException;
     APIResponse login(LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request,Authentication authentication);
+    APIResponse logout(Authentication authentication) throws AccessDeniedException;
     APIResponse getUserInfo(UserDetails userDetails);
     APIResponse getUserByPage(int page, int size);
     APIResponse filterUser(String keyword, Gender gender, LocalDate birthday,int page, int size);
